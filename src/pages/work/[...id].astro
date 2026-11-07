@@ -1,0 +1,116 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/Container.astro";
+import BackLink from "@components/BackLink.astro";
+import MetaLine from "@components/MetaLine.astro";
+import HeroImage from "@components/HeroImage.astro";
+import SkillChip from "@components/SkillChip.astro";
+import { work } from "@data/work";
+import { getPosts, getProjects } from "@lib/content";
+import { formatDateRange, formatDuration } from "@lib/utils";
+
+// One page per entry in src/data/work.ts (same pattern as the reference repo).
+export function getStaticPaths() {
+  return work.map((item) => ({ params: { id: item.id }, props: { item } }));
+}
+
+const { item } = Astro.props;
+const posts = (await getPosts()).filter((p) =>
+  item.relatedPosts?.includes(p.id),
+);
+const projects = (await getProjects()).filter((p) =>
+  item.relatedProjects?.includes(p.id),
+);
+const typeLine = [item.employmentType, item.location]
+  .filter(Boolean)
+  .join(" · ");
+---
+
+<Layout
+  title={`${item.title} · ${item.company}`}
+  description={item.description ?? item.company}
+>
+  <Container>
+    <BackLink href="/#experience">Back to experience</BackLink>
+    <article class="flex flex-col gap-7">
+      <div class="flex flex-col gap-3">
+        <MetaLine>
+          <span>
+            {formatDateRange(item.startDate, item.endDate)} ·
+            {formatDuration(item.startDate, item.endDate)}
+          </span>
+          {typeLine && <span>{typeLine}</span>}
+        </MetaLine>
+        <h1 class="text-[clamp(30px,6vw,44px)] leading-[1.08] font-bold tracking-[-0.03em]">
+          {item.title}
+        </h1>
+        <p class="text-muted text-lg">
+          {item.companyURL ? (
+            <a
+              href={item.companyURL}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:text-accent"
+            >
+              {item.company} ↗
+            </a>
+          ) : (
+            item.company
+          )}
+        </p>
+      </div>
+
+      <HeroImage
+        src={item.image}
+        alt={item.company}
+        placeholder="team photo or workspace"
+      />
+
+      <div class="prose prose-site">
+        {item.description && <p>{item.description}</p>}
+        {item.highlights && (
+          <>
+            <h2>What I worked on</h2>
+            <ul>
+              {item.highlights.map((h) => (
+                <li>{h}</li>
+              ))}
+            </ul>
+          </>
+        )}
+        {(posts.length > 0 || projects.length > 0) && (
+          <>
+            <h2>In my own words</h2>
+            <ul>
+              {posts.map((p) => (
+                <li>
+                  <a href={`/blog/${p.id}`}>{p.data.title}</a>
+                </li>
+              ))}
+              {projects.map((p) => (
+                <li>
+                  <a href={`/projects/${p.id}`}>Project: {p.data.title}</a>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+        {item.proofURL && (
+          <p>
+            <a href={item.proofURL} target="_blank" rel="noopener noreferrer">
+              Verify (certificate) ↗
+            </a>
+          </p>
+        )}
+      </div>
+
+      {item.skills && (
+        <div class="flex flex-wrap gap-2">
+          {item.skills.map((s) => (
+            <SkillChip skill={s} href="/skills" />
+          ))}
+        </div>
+      )}
+    </article>
+  </Container>
+</Layout>
