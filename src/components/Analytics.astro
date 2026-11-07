@@ -1,0 +1,13 @@
+---
+/** GoatCounter page-view script (no cookies). Only added when a code is configured. */
+const code = import.meta.env.PUBLIC_GOATCOUNTER_CODE;
+---
+
+{code && (
+  <script
+    is:inline
+    async
+    data-goatcounter={`https://${code}.goatcounter.com/count`}
+    src="https://gc.zgo.at/count.js"
+  />
+)}

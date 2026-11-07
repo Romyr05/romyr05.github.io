@@ -1,5 +1,6 @@
 ---
 import { SITE } from "@consts";
+import VisitorCounter from "@components/VisitorCounter.astro";
 
 const year = new Date().getFullYear();
 ---
@@ -13,6 +14,6 @@ const year = new Date().getFullYear();
         Source code
       </a>
     </span>
-    <slot />
+    <VisitorCounter />
   </div>
 </footer>

@@ -1,0 +1,40 @@
+---
+import { Icon } from "astro-icon/components";
+
+/**
+ * Visit count from GoatCounter's public counter endpoint
+ * (enable "Allow adding visitor counts" in your GoatCounter settings).
+ * Shows "—" when PUBLIC_GOATCOUNTER_CODE is unset or the request fails.
+ * Counts are cached by GoatCounter for ~30 minutes.
+ */
+const code = import.meta.env.PUBLIC_GOATCOUNTER_CODE;
+---
+
+<span
+  class="inline-flex items-center gap-1.5"
+  title="Home page visits (GoatCounter)"
+>
+  <Icon name="lucide:eye" class="size-3.5" />
+  <span id="visit-count" data-code={code ?? ""}>
+    —
+  </span>{" "}
+  visits
+</span>
+
+<script>
+  const el = document.getElementById("visit-count");
+  const code = el?.dataset.code;
+  if (el && code) {
+    // Home page path "/" -> "%2F"; GoatCounter returns { count: "1,234" }.
+    fetch(
+      `https://${code}.goatcounter.com/counter/${encodeURIComponent("/")}.json`,
+    )
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { count?: string } | null) => {
+        if (data?.count) el.textContent = data.count;
+      })
+      .catch(() => {
+        /* leave "—" */
+      });
+  }
+</script>

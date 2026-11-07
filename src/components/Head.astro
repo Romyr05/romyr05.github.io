@@ -6,6 +6,8 @@ import "@fontsource/geist-sans/700.css";
 import "@fontsource/geist-mono/400.css";
 import "@fontsource/geist-mono/500.css";
 import "@styles/global.css";
+import Analytics from "@components/Analytics.astro";
+import { SITE } from "@consts";
 
 type Props = {
   title: string;
@@ -26,6 +28,13 @@ const imageURL = image ? new URL(image, Astro.site) : undefined;
 <link rel="icon" href="/favicon.ico" />
 <link rel="canonical" href={canonicalURL} />
 <meta name="generator" content={Astro.generator} />
+<link rel="sitemap" href="/sitemap-index.xml" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title={`${SITE.TITLE} · Blog`}
+  href={new URL("rss.xml", Astro.site)}
+/>
 
 <title>{title}</title>
 <meta name="description" content={description} />
@@ -60,3 +69,5 @@ const imageURL = image ? new URL(image, Astro.site) : undefined;
     document.documentElement.dataset.theme = theme;
   })();
 </script>
+
+<Analytics />
