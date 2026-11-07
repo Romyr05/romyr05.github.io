@@ -1,0 +1,128 @@
+---
+import { SITE } from "@consts";
+
+/**
+ * Last year of GitHub contributions, fetched once at build time.
+ * Needs GITHUB_TOKEN (see .env.example); falls back to a labelled sample grid.
+ */
+type Level = 0 | 1 | 2 | 3 | 4;
+type Day = { date: string; count: number; level: Level };
+
+const LEVELS: Record<string, Level> = {
+  NONE: 0,
+  FIRST_QUARTILE: 1,
+  SECOND_QUARTILE: 2,
+  THIRD_QUARTILE: 3,
+  FOURTH_QUARTILE: 4,
+};
+
+const username = SITE.GITHUB_USERNAME;
+const token = import.meta.env.GITHUB_TOKEN;
+
+async function fetchCalendar(): Promise<{ total: number; days: Day[] } | null> {
+  if (!token) return null;
+  const query = `query ($login: String!) {
+    user(login: $login) {
+      contributionsCollection {
+        contributionCalendar {
+          totalContributions
+          weeks { contributionDays { date contributionCount contributionLevel } }
+        }
+      }
+    }
+  }`;
+  try {
+    const res = await fetch("https://api.github.com/graphql", {
+      method: "POST",
+      headers: {
+        Authorization: `bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query, variables: { login: username } }),
+    });
+    if (!res.ok) {
+      console.warn(
+        `[github] contribution fetch failed: ${res.status} ${res.statusText}`,
+      );
+      return null;
+    }
+    const json = await res.json();
+    const cal = json?.data?.user?.contributionsCollection?.contributionCalendar;
+    if (!cal) return null;
+    type ApiDay = {
+      date: string;
+      contributionCount: number;
+      contributionLevel: string;
+    };
+    const days: Day[] = cal.weeks.flatMap((w: { contributionDays: ApiDay[] }) =>
+      w.contributionDays.map((d) => ({
+        date: d.date,
+        count: d.contributionCount,
+        level: LEVELS[d.contributionLevel] ?? 0,
+      })),
+    );
+    return { total: cal.totalContributions, days };
+  } catch (err) {
+    console.warn("[github] contribution fetch failed", err);
+    return null;
+  }
+}
+
+/** Deterministic fake data (same seed as the mockup) for builds without a token. */
+function sampleDays(): Day[] {
+  let seed = 7;
+  const rnd = () => {
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed / 233280;
+  };
+  return Array.from({ length: 53 * 7 }, (_, i) => {
+    const r = rnd();
+    const level: Level =
+      r < 0.45 ? 0 : r < 0.7 ? 1 : r < 0.86 ? 2 : r < 0.95 ? 3 : 4;
+    return { date: `sample-${i}`, count: level, level };
+  });
+}
+
+const real = await fetchCalendar();
+const days = real?.days ?? sampleDays();
+const label = real
+  ? `${real.total.toLocaleString("en-US")} contributions in the last year`
+  : "Contribution graph (sample: set GITHUB_TOKEN for real data)";
+
+// The first week is usually partial; pad so each weekday stays in its row (Sun = row 1).
+const firstDate = real?.days[0]?.date;
+const pad = firstDate ? new Date(`${firstDate}T00:00:00Z`).getUTCDay() : 0;
+
+const levelClass = ["bg-g0", "bg-g1", "bg-g2", "bg-g3", "bg-g4"] as const;
+---
+
+<div class="border-line min-w-0 rounded-xl border p-[18px]">
+  <div class="overflow-x-auto pb-1">
+    <div
+      class="grid w-max grid-flow-col grid-rows-[repeat(7,10px)] auto-cols-[10px] gap-[3px]"
+      role="img"
+      aria-label={label}
+    >
+      {Array.from({ length: pad }, () => (
+        <span />
+      ))}
+      {days.map((d) => (
+        <i
+          class:list={["rounded-[2px]", levelClass[d.level]]}
+          title={real ? `${d.count} contributions on ${d.date}` : undefined}
+        />
+      ))}
+    </div>
+  </div>
+  <div class="text-muted mt-3 flex flex-wrap justify-between gap-3 font-mono text-xs">
+    <span>{label}</span>
+    <a
+      href={`https://github.com/${username}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-accent no-underline hover:underline"
+    >
+      @{username} ↗
+    </a>
+  </div>
+</div>

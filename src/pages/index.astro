@@ -10,6 +10,7 @@ import AchievementItem from "@components/AchievementItem.astro";
 import EducationCard from "@components/EducationCard.astro";
 import CertRail from "@components/CertRail.astro";
 import PostItem from "@components/PostItem.astro";
+import GithubContributions from "@components/GithubContributions.astro";
 import {
   HOME,
   PINNED_ACHIEVEMENTS,
@@ -115,6 +116,10 @@ const navSections = [
           ))}
         </div>
         <MoreLink href="/blog">All posts</MoreLink>
+      </Section>
+
+      <Section id="github" title="GitHub">
+        <GithubContributions />
       </Section>
     </div>
   </div>
