@@ -1,0 +1,76 @@
+---
+import { render } from "astro:content";
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/Container.astro";
+import BackLink from "@components/BackLink.astro";
+import MetaLine from "@components/MetaLine.astro";
+import HeroImage from "@components/HeroImage.astro";
+import { getAchievementForPost, getPosts, getProjects } from "@lib/content";
+import { formatDate, readingTime } from "@lib/utils";
+
+// One template for blog posts and achievement write-ups.
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { title, description, date, tags, image } = post.data;
+const { Content } = await render(post);
+
+const achievement = getAchievementForPost(post.id);
+const relatedProject = achievement?.relatedProject
+  ? (await getProjects()).find((p) => p.id === achievement.relatedProject)
+  : undefined;
+const context = achievement
+  ? [achievement.organizer, achievement.type].filter(Boolean).join(" · ")
+  : tags.join(" · ");
+---
+
+<Layout
+  title={title}
+  description={description}
+  image={image?.src}
+  type="article"
+>
+  <Container>
+    {achievement ? (
+      <BackLink href="/achievements">Back to achievements</BackLink>
+    ) : (
+      <BackLink href="/blog">Back to blog</BackLink>
+    )}
+    <article class="flex flex-col gap-7">
+      <div class="flex flex-col gap-3">
+        {achievement && (
+          <span class="text-accent font-mono text-[11px] leading-none font-medium tracking-[.08em] uppercase">
+            Achievement · {achievement.position}
+          </span>
+        )}
+        <h1 class="text-[clamp(30px,6vw,44px)] leading-[1.08] font-bold tracking-[-0.03em]">
+          {title}
+        </h1>
+        <MetaLine>
+          <time datetime={date.toISOString()}>{formatDate(date)}</time>
+          <span>{readingTime(post.body ?? "")}</span>
+          {context && <span>{context}</span>}
+        </MetaLine>
+      </div>
+
+      <HeroImage src={image} alt={title} placeholder="cover photo" />
+
+      <div class="prose prose-site">
+        <Content />
+        {relatedProject && (
+          <>
+            <h2>Related project</h2>
+            <p>
+              <a href={`/projects/${relatedProject.id}`}>
+                {relatedProject.data.title} →
+              </a>
+            </p>
+          </>
+        )}
+      </div>
+    </article>
+  </Container>
+</Layout>
