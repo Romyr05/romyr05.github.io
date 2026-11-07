@@ -1,0 +1,18 @@
+---
+import { SITE } from "@consts";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="text-muted mx-auto max-w-[1120px] py-10 font-mono text-xs">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <span>
+      © {year}
+      {SITE.AUTHOR} ·
+      <a href={SITE.SOURCE_URL} class="hover:text-accent">
+        Source code
+      </a>
+    </span>
+    <slot />
+  </div>
+</footer>

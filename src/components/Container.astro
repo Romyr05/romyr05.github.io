@@ -1,0 +1,14 @@
+---
+/** Single reading column used by every page except home. */
+type Props = { wide?: boolean };
+const { wide = false } = Astro.props;
+---
+
+<div
+  class:list={[
+    "mx-auto flex flex-col gap-7 pt-10 pb-20",
+    wide ? "max-w-[960px]" : "max-w-[720px]",
+  ]}
+>
+  <slot />
+</div>

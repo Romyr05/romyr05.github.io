@@ -1,0 +1,40 @@
+---
+import Head from "@components/Head.astro";
+import Header from "@components/Header.astro";
+import Footer from "@components/Footer.astro";
+import { SITE } from "@consts";
+
+type Props = {
+  title: string;
+  description: string;
+  image?: string;
+  type?: "website" | "article";
+};
+
+const { title, description, image, type } = Astro.props;
+const fullTitle = title === SITE.TITLE ? title : `${title} | ${SITE.TITLE}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <Head
+      title={fullTitle}
+      description={description}
+      image={image}
+      type={type}
+    />
+    <slot name="head" />
+  </head>
+  <body class="px-4">
+    <Header>
+      <slot name="header-actions" slot="actions" />
+    </Header>
+    <main>
+      <slot />
+    </main>
+    <Footer>
+      <slot name="footer" />
+    </Footer>
+  </body>
+</html>

@@ -1,0 +1,41 @@
+---
+import { NAV_LINKS } from "@consts";
+import ThemeToggle from "@components/ThemeToggle.astro";
+
+const brand = "romyr"; // TODO: header brand text
+const path = Astro.url.pathname;
+---
+
+<header class="border-line bg-bg sticky top-0 z-10 border-b px-4 sm:px-[max(16px,env(safe-area-inset-left))]">
+  <div class="mx-auto flex h-(--header-h) max-w-[1120px] items-center justify-end gap-4 sm:justify-between">
+    <a
+      href="/"
+      class="hidden font-mono text-[15px] font-semibold no-underline sm:block"
+    >
+      {brand}
+    </a>
+    <nav aria-label="Pages" class="flex flex-wrap items-center gap-1">
+      {NAV_LINKS.map((link) => {
+        const active = path.startsWith(link.HREF);
+        const isCv = link.HREF === "/cv";
+        return (
+          <a
+            href={link.HREF}
+            aria-current={active ? "page" : undefined}
+            class:list={[
+              "hover:bg-bg-accent hover:text-fg rounded-md px-[7px] py-1.5 font-mono text-[12.5px] no-underline sm:px-2.5 sm:text-[13.5px]",
+              active || isCv ? "text-fg" : "text-muted",
+              isCv && "border-line hover:border-accent border",
+            ]}
+          >
+            {link.LABEL}
+          </a>
+        );
+      })}
+      <slot name="actions" />
+      <span class="ml-1.5">
+        <ThemeToggle />
+      </span>
+    </nav>
+  </div>
+</header>
