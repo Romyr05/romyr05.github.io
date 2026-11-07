@@ -1,0 +1,14 @@
+---
+/** Striped placeholder where an image will go. Replace with a real <Image /> later. */
+type Props = { label?: string; class?: string };
+const { label = "image", class: className } = Astro.props;
+---
+
+<div
+  class:list={[
+    "shot border-line not-prose aspect-[4/3] rounded-lg border",
+    className,
+  ]}
+>
+  {label}
+</div>
