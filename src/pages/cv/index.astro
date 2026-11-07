@@ -1,0 +1,111 @@
+---
+import { Icon } from "astro-icon/components";
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/Container.astro";
+import BackLink from "@components/BackLink.astro";
+import CvSection from "@components/CvSection.astro";
+import CvItem from "@components/CvItem.astro";
+import Chip from "@components/Chip.astro";
+import { CV, PINNED_PROJECTS, PINNED_SKILLS, SITE } from "@consts";
+import { education } from "@data/education";
+import { work } from "@data/work";
+import { skills } from "@data/skills";
+import { getAchievementsForProject, getProjects } from "@lib/content";
+import { formatDate, formatDateRange, pickPinned } from "@lib/utils";
+
+// Built from the same data as the rest of the site, so it never drifts.
+const CV_PDF = "/cv.pdf"; // TODO: drop your PDF at public/cv.pdf
+
+const degrees = education.filter((e) => e.category === "Degree");
+const certs = education.filter((e) => e.category === "Certification");
+const projects = pickPinned(PINNED_PROJECTS, await getProjects(), (p) => p.id);
+---
+
+<Layout title={CV.TITLE} description={CV.DESCRIPTION}>
+  <Container>
+    <BackLink href="/">Home</BackLink>
+    <div class="flex flex-col gap-3">
+      <h1 class="text-[clamp(30px,6vw,44px)] leading-[1.08] font-bold tracking-[-0.03em]">
+        {SITE.AUTHOR}
+      </h1>
+      <p class="text-muted text-lg">{SITE.ROLE}</p>
+      <div class="flex flex-wrap gap-2.5">
+        {[
+          {
+            label: "Open PDF ↗",
+            icon: "lucide:file-text",
+            attrs: { target: "_blank", rel: "noopener" },
+          },
+          {
+            label: "Download",
+            icon: "lucide:download",
+            attrs: { download: "" },
+          },
+        ].map((b) => (
+          <a
+            href={CV_PDF}
+            {...b.attrs}
+            class="border-line hover:border-accent hover:text-accent inline-flex w-fit items-center gap-2 rounded-md border px-3.5 py-2 font-mono text-[13px] no-underline"
+          >
+            <Icon name={b.icon} class="size-4" />
+            {b.label}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <CvSection title="Education">
+      {degrees.map((d) => (
+        <CvItem
+          title={d.title}
+          date={
+            d.startDate && d.endDate
+              ? formatDateRange(d.startDate, d.endDate, "year")
+              : (d.endDate ?? "")
+          }
+          subtitle={d.institution}
+        />
+      ))}
+    </CvSection>
+
+    <CvSection title="Experience">
+      {work.map((w) => (
+        <CvItem
+          title={`${w.title} · ${w.company}`}
+          date={formatDateRange(w.startDate, w.endDate)}
+          bullets={w.highlights}
+        />
+      ))}
+    </CvSection>
+
+    <CvSection title="Projects">
+      {projects.map((p) => {
+        const wins = getAchievementsForProject(p.id).map(
+          (a) => `${a.title} ${a.position.toLowerCase()}`,
+        );
+        const stack = p.data.skills.map((s) => skills[s].name).join(", ");
+        return (
+          <CvItem
+            title={p.data.title}
+            date={formatDate(p.data.startDate, "year")}
+            subtitle={[stack, ...wins].filter(Boolean).join(" · ")}
+          />
+        );
+      })}
+    </CvSection>
+
+    <CvSection title="Certifications">
+      {certs.map((c) => (
+        <CvItem title={c.title} date={c.endDate ?? ""} subtitle={c.provider} />
+      ))}
+    </CvSection>
+
+    <CvSection title="Skills">
+      <div class="flex flex-wrap gap-2">
+        {PINNED_SKILLS.map((s) => (
+          <Chip>{skills[s].name}</Chip>
+        ))}
+      </div>
+    </CvSection>
+  </Container>
+</Layout>
