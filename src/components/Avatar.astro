@@ -1,0 +1,20 @@
+---
+import { SITE } from "@consts";
+---
+
+{SITE.AVATAR ? (
+  <img
+    src={SITE.AVATAR}
+    alt={SITE.AUTHOR}
+    width="96"
+    height="96"
+    class="border-line size-24 rounded-full border object-cover"
+  />
+) : (
+  <div
+    aria-label="Profile photo placeholder"
+    class="bg-bg-accent border-line text-muted grid size-24 place-items-center rounded-full border font-mono text-[11px] font-medium"
+  >
+    your photo
+  </div>
+)}

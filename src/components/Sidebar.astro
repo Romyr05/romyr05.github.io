@@ -1,0 +1,83 @@
+---
+import Avatar from "@components/Avatar.astro";
+import Socials from "@components/Socials.astro";
+import { SITE } from "@consts";
+
+/** Home page identity column. `sections` drives the scrollspy nav. */
+type Props = { sections: { id: string; label: string }[] };
+const { sections } = Astro.props;
+---
+
+<aside class="flex flex-col gap-5 pt-8 pb-2 min-[880px]:sticky min-[880px]:top-(--header-h) min-[880px]:h-[calc(100vh-var(--header-h))] min-[880px]:py-12">
+  <Avatar />
+  <div>
+    <h1 class="text-4xl leading-[1.05] font-bold tracking-[-0.03em] min-[560px]:text-[42px]">
+      {SITE.AUTHOR}
+    </h1>
+    <p class="text-fg-accent mt-1.5 text-[17px] font-medium">{SITE.ROLE}</p>
+    <div class="mt-3.5">
+      <Socials />
+    </div>
+  </div>
+  <p class="text-muted max-w-[32ch]">{SITE.TAGLINE}</p>
+  <nav
+    aria-label="Sections"
+    class="section-nav mt-2 hidden flex-col gap-1 min-[880px]:flex"
+  >
+    {sections.map((s, i) => (
+      <a href={`#${s.id}`} data-section={s.id} class:list={[i === 0 && "on"]}>
+        {s.label}
+      </a>
+    ))}
+  </nav>
+</aside>
+
+<style>
+  .section-nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: fit-content;
+    text-decoration: none;
+    font: 500 12px/2 var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .section-nav a::before {
+    content: "";
+    width: 28px;
+    height: 1px;
+    background: currentColor;
+    transition: width 0.2s;
+  }
+  .section-nav a:hover,
+  .section-nav a.on {
+    color: var(--fg);
+  }
+  .section-nav a:hover::before,
+  .section-nav a.on::before {
+    width: 56px;
+  }
+</style>
+
+<script>
+  // Highlight the nav link of the section crossing the middle of the screen.
+  const links = document.querySelectorAll<HTMLAnchorElement>(".section-nav a");
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        links.forEach((l) =>
+          l.classList.toggle("on", l.dataset.section === entry.target.id),
+        );
+      }
+    },
+    { rootMargin: "-40% 0px -55% 0px" },
+  );
+  links.forEach((l) => {
+    const target =
+      l.dataset.section && document.getElementById(l.dataset.section);
+    if (target) observer.observe(target);
+  });
+</script>
