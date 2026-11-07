@@ -1,4 +1,5 @@
 import type { Metadata, NavLink, Site, Social } from "@types";
+import type { SkillKey } from "@data/skills";
 
 // Every "TODO:" in this repo is a placeholder for you to replace.
 // List them all with: grep -rn "TODO:" src public
@@ -64,7 +65,7 @@ export const PINNED_SKILLS = [
   "aws",
   "docker",
   "n8n",
-] as const;
+] satisfies SkillKey[];
 
 export const HOME: Metadata = {
   TITLE: "Home",
