@@ -1,0 +1,33 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/Container.astro";
+import BackLink from "@components/BackLink.astro";
+import PageHeader from "@components/PageHeader.astro";
+import SkillChip from "@components/SkillChip.astro";
+import { SKILLS } from "@consts";
+import { skillGroups } from "@data/skills";
+import { countSkillUsage, getProjects } from "@lib/content";
+
+const counts = countSkillUsage(await getProjects());
+---
+
+<Layout title={SKILLS.TITLE} description={SKILLS.DESCRIPTION}>
+  <Container>
+    <BackLink href="/#projects">Home</BackLink>
+    <PageHeader title={SKILLS.TITLE} lede={SKILLS.DESCRIPTION} />
+    <div class="flex flex-col gap-7">
+      {Object.entries(skillGroups).map(([group, keys]) => (
+        <div class="flex flex-col gap-2.5">
+          <h2 class="font-mono text-[13px] leading-none font-medium tracking-[.14em] uppercase">
+            {group}
+          </h2>
+          <div class="flex flex-wrap gap-2">
+            {keys.map((s) => (
+              <SkillChip skill={s} href="/projects" count={counts[s] ?? 0} />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </Container>
+</Layout>
