@@ -1,6 +1,7 @@
 ---
 import { NAV_LINKS } from "@consts";
 import ThemeToggle from "@components/ThemeToggle.astro";
+import Search from "@components/Search.astro";
 
 const brand = "romyr"; // TODO: header brand text
 const path = Astro.url.pathname;
@@ -14,7 +15,7 @@ const path = Astro.url.pathname;
     >
       {brand}
     </a>
-    <nav aria-label="Pages" class="flex flex-wrap items-center gap-1">
+    <nav aria-label="Pages" class="flex items-center gap-0.5 sm:gap-1">
       {NAV_LINKS.map((link) => {
         const active = path.startsWith(link.HREF);
         const isCv = link.HREF === "/cv";
@@ -23,7 +24,7 @@ const path = Astro.url.pathname;
             href={link.HREF}
             aria-current={active ? "page" : undefined}
             class:list={[
-              "hover:bg-bg-accent hover:text-fg rounded-md px-[7px] py-1.5 font-mono text-[12.5px] no-underline sm:px-2.5 sm:text-[13.5px]",
+              "hover:bg-bg-accent hover:text-fg rounded-md px-1.5 py-1.5 font-mono text-xs no-underline sm:px-2.5 sm:text-[13.5px]",
               active || isCv ? "text-fg" : "text-muted",
               isCv && "border-line hover:border-accent border",
             ]}
@@ -32,8 +33,10 @@ const path = Astro.url.pathname;
           </a>
         );
       })}
-      <slot name="actions" />
-      <span class="ml-1.5">
+      <span class="ml-1 sm:ml-1.5">
+        <Search />
+      </span>
+      <span class="ml-1 sm:ml-1.5">
         <ThemeToggle />
       </span>
     </nav>

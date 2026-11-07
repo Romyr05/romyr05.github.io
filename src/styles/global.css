@@ -125,3 +125,24 @@
   --tw-prose-td-borders: var(--line);
   max-width: 65ch;
 }
+
+/*
+ * Pagefind search modal colours follow the site theme.
+ * :root:root beats Pagefind's own :root / [data-pf-theme] defaults.
+ */
+:root:root {
+  --pf-text: var(--fg);
+  --pf-text-secondary: var(--fg-accent);
+  --pf-text-muted: var(--muted);
+  --pf-background: var(--bg);
+  --pf-border: var(--line);
+  --pf-border-focus: var(--accent);
+  --pf-skeleton: var(--bg-accent);
+  --pf-skeleton-shine: var(--bg-dim);
+  --pf-hover: var(--bg-accent);
+  --pf-mark: var(--accent);
+  --pf-outline-focus: var(--accent);
+  --pf-font: var(--font-mono);
+  --pf-input-height: 34px;
+  --pf-input-font-size: 13.5px;
+}

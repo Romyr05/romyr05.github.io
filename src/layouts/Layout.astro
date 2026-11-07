@@ -27,14 +27,11 @@ const fullTitle = title === SITE.TITLE ? title : `${title} | ${SITE.TITLE}`;
     <slot name="head" />
   </head>
   <body class="px-4">
-    <Header>
-      <slot name="header-actions" slot="actions" />
-    </Header>
-    <main>
+    <Header />
+    <!-- Only <main> is indexed by Pagefind search (not header/footer). -->
+    <main data-pagefind-body>
       <slot />
     </main>
-    <Footer>
-      <slot name="footer" />
-    </Footer>
+    <Footer />
   </body>
 </html>

@@ -1,0 +1,13 @@
+---
+import PagefindConfig from "astro-pagefind/components/PagefindConfig.astro";
+
+/**
+ * Pagefind's built-in modal search. The trigger also binds Ctrl/⌘+K.
+ * The index is generated at build time, so search only works after
+ * `pnpm build` (use `pnpm preview` to try it locally).
+ */
+---
+
+<PagefindConfig />
+<pagefind-modal-trigger compact placeholder="Search"></pagefind-modal-trigger>
+<pagefind-modal></pagefind-modal>
