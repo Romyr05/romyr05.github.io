@@ -1,0 +1,32 @@
+---
+import { Icon } from "astro-icon/components";
+import type { EducationItem } from "@data/education";
+import { formatDateRange } from "@lib/utils";
+
+type Props = { item: EducationItem };
+const { item } = Astro.props;
+const dates =
+  item.startDate && item.endDate
+    ? formatDateRange(item.startDate, item.endDate, "year")
+    : (item.endDate ?? "");
+---
+
+<div class="border-line grid grid-cols-[48px_1fr] items-start gap-4 rounded-xl border p-[18px]">
+  <div class="bg-bg-accent border-line text-muted grid size-12 place-items-center rounded-[10px] border">
+    {item.logo ? (
+      <Icon name={item.logo} class="size-6" />
+    ) : (
+      <Icon name="lucide:graduation-cap" class="size-5" />
+    )}
+  </div>
+  <div>
+    <div class="text-base font-semibold">{item.title}</div>
+    <div class="text-muted text-sm">
+      {item.institution ?? item.provider} · {dates}
+      {item.note}
+    </div>
+    {item.description && (
+      <p class="text-muted mt-1.5 text-sm">{item.description}</p>
+    )}
+  </div>
+</div>

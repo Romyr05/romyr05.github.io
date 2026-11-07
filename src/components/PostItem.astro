@@ -1,0 +1,15 @@
+---
+import ListItem from "@components/ListItem.astro";
+import type { Post } from "@lib/content";
+import { formatDate } from "@lib/utils";
+
+type Props = { post: Post };
+const { post } = Astro.props;
+---
+
+<ListItem
+  href={`/blog/${post.id}`}
+  title={post.data.title}
+  date={formatDate(post.data.date, "month")}
+  description={post.data.description}
+/>

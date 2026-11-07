@@ -1,0 +1,18 @@
+---
+import ListItem from "@components/ListItem.astro";
+import type { Achievement } from "@data/achievements";
+import { formatDate } from "@lib/utils";
+
+type Props = { achievement: Achievement };
+const { achievement: a } = Astro.props;
+const title = a.organizer ? `${a.title} · ${a.organizer}` : a.title;
+const description = a.relatedPost ? `${a.type} · Read the write-up →` : a.type;
+---
+
+<ListItem
+  href={a.relatedPost ? `/blog/${a.relatedPost}` : a.url}
+  eyebrow={a.position}
+  title={title}
+  date={formatDate(a.date, "year")}
+  description={description}
+/>
