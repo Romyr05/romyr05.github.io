@@ -1,0 +1,23 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/Container.astro";
+import BackLink from "@components/BackLink.astro";
+import PageHeader from "@components/PageHeader.astro";
+import ProjectCard from "@components/ProjectCard.astro";
+import { PROJECTS } from "@consts";
+import { getProjects } from "@lib/content";
+
+const projects = await getProjects();
+---
+
+<Layout title={PROJECTS.TITLE} description={PROJECTS.DESCRIPTION}>
+  <Container wide>
+    <BackLink href="/">Home</BackLink>
+    <PageHeader title={PROJECTS.TITLE} lede={PROJECTS.DESCRIPTION} />
+    <div class="grid grid-cols-1 gap-4 min-[560px]:grid-cols-2">
+      {projects.map((project) => (
+        <ProjectCard project={project} />
+      ))}
+    </div>
+  </Container>
+</Layout>

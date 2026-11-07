@@ -1,0 +1,105 @@
+---
+import { render } from "astro:content";
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/Container.astro";
+import BackLink from "@components/BackLink.astro";
+import MetaLine from "@components/MetaLine.astro";
+import HeroImage from "@components/HeroImage.astro";
+import SkillChip from "@components/SkillChip.astro";
+import { getAchievementsForProject, getPosts, getProjects } from "@lib/content";
+import { formatDateRange } from "@lib/utils";
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project) => ({
+    params: { id: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const {
+  title,
+  description,
+  startDate,
+  endDate,
+  demoURL,
+  repoURL,
+  skills,
+  image,
+} = project.data;
+const { Content } = await render(project);
+
+const posts = await getPosts();
+const relatedPosts = posts.filter((p) =>
+  project.data.relatedPosts?.includes(p.id),
+);
+const relatedAchievements = getAchievementsForProject(project.id);
+const hasRelated = relatedPosts.length > 0 || relatedAchievements.length > 0;
+---
+
+<Layout title={title} description={description} image={image?.src}>
+  <Container>
+    <BackLink href="/projects">Back to projects</BackLink>
+    <article class="flex flex-col gap-7">
+      <div class="flex flex-col gap-3">
+        <MetaLine>
+          <span>{formatDateRange(startDate, endDate)}</span>
+          {demoURL && (
+            <a href={demoURL} target="_blank" rel="noopener noreferrer">
+              demo ↗
+            </a>
+          )}
+          {repoURL && (
+            <a href={repoURL} target="_blank" rel="noopener noreferrer">
+              repo ↗
+            </a>
+          )}
+        </MetaLine>
+        <h1 class="text-[clamp(30px,6vw,44px)] leading-[1.08] font-bold tracking-[-0.03em]">
+          {title}
+        </h1>
+        <p class="text-muted max-w-[56ch] text-lg">{description}</p>
+        <div class="flex flex-wrap gap-2">
+          {skills.map((s) => (
+            <SkillChip skill={s} href="/skills" />
+          ))}
+        </div>
+      </div>
+
+      <HeroImage
+        src={image}
+        alt={title}
+        placeholder="main screenshot or demo GIF"
+      />
+
+      <div class="prose prose-site">
+        <Content />
+        {hasRelated && (
+          <>
+            <h2>Related</h2>
+            <ul>
+              {relatedAchievements.map((a) => (
+                <li>
+                  <a href={a.relatedPost ? `/blog/${a.relatedPost}` : a.url}>
+                    {a.position} · {a.title}
+                  </a>
+                </li>
+              ))}
+              {relatedPosts
+                .filter(
+                  (p) =>
+                    !relatedAchievements.some((a) => a.relatedPost === p.id),
+                )
+                .map((p) => (
+                  <li>
+                    <a href={`/blog/${p.id}`}>{p.data.title}</a>
+                  </li>
+                ))}
+            </ul>
+          </>
+        )}
+      </div>
+    </article>
+  </Container>
+</Layout>
