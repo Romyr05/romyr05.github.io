@@ -1,0 +1,65 @@
+---
+import SkillChip from "@components/SkillChip.astro";
+import type { SkillKey } from "@data/skills";
+
+/**
+ * Infinite scrolling row of skills. The list is rendered twice and the track
+ * slides by -50%, so the loop is seamless. The copy is hidden from screen readers.
+ */
+type Props = { skills: readonly SkillKey[] };
+const { skills } = Astro.props;
+---
+
+<div class="marquee min-w-0 overflow-hidden" aria-label="Tech stack">
+  <div class="track flex w-max">
+    <div class="flex gap-2 pr-2">
+      {skills.map((s) => (
+        <SkillChip skill={s} href="/skills" />
+      ))}
+    </div>
+    <div class="dup flex gap-2 pr-2" aria-hidden="true">
+      {skills.map((s) => (
+        <SkillChip skill={s} href="/skills" tabindex={-1} />
+      ))}
+    </div>
+  </div>
+</div>
+
+<style>
+  .marquee {
+    mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 8%,
+      #000 92%,
+      transparent
+    );
+  }
+  .track {
+    animation: marquee 32s linear infinite;
+  }
+  .marquee:hover .track,
+  .marquee:focus-within .track {
+    animation-play-state: paused;
+  }
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  /* No motion: show one wrapped list instead of scrolling. */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      mask-image: none;
+    }
+    .track {
+      width: auto;
+    }
+    .track > div:first-child {
+      flex-wrap: wrap;
+    }
+    .dup {
+      display: none;
+    }
+  }
+</style>

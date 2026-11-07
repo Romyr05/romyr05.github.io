@@ -1,0 +1,52 @@
+---
+import CertCard from "@components/CertCard.astro";
+import type { EducationItem } from "@data/education";
+
+/** Horizontal snap-scrolling row of certificates with prev/next buttons. */
+type Props = { items: EducationItem[] };
+const { items } = Astro.props;
+---
+
+<div class="cert-rail flex flex-col gap-3">
+  <div class="flex justify-end gap-2">
+    {[
+      { dir: -1, label: "Previous certifications", text: "←" },
+      { dir: 1, label: "Next certifications", text: "→" },
+    ].map((b) => (
+      <button
+        type="button"
+        data-dir={b.dir}
+        aria-label={b.label}
+        class="border-line bg-bg text-fg hover:border-accent hover:text-accent size-8 cursor-pointer rounded-full border font-mono text-sm"
+      >
+        {b.text}
+      </button>
+    ))}
+  </div>
+  <div
+    data-track
+    class="grid snap-x snap-mandatory auto-cols-[minmax(200px,70%)] grid-flow-col gap-4 overflow-x-auto pb-2.5 [scrollbar-width:thin] min-[880px]:auto-cols-[minmax(220px,46%)]"
+  >
+    {items.map((item) => (
+      <CertCard item={item} />
+    ))}
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>(".cert-rail").forEach((rail) => {
+    const track = rail.querySelector<HTMLElement>("[data-track]");
+    rail
+      .querySelectorAll<HTMLButtonElement>("button[data-dir]")
+      .forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (!track) return;
+          const dir = Number(btn.dataset.dir);
+          track.scrollBy({
+            left: dir * track.clientWidth * 0.8,
+            behavior: "smooth",
+          });
+        });
+      });
+  });
+</script>
