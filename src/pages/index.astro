@@ -1,8 +1,121 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import { HOME, SITE } from "@consts";
+import Sidebar from "@components/Sidebar.astro";
+import Section from "@components/Section.astro";
+import MoreLink from "@components/MoreLink.astro";
+import WorkRow from "@components/WorkRow.astro";
+import ProjectCard from "@components/ProjectCard.astro";
+import StackMarquee from "@components/StackMarquee.astro";
+import AchievementItem from "@components/AchievementItem.astro";
+import EducationCard from "@components/EducationCard.astro";
+import CertRail from "@components/CertRail.astro";
+import PostItem from "@components/PostItem.astro";
+import {
+  HOME,
+  PINNED_ACHIEVEMENTS,
+  PINNED_PROJECTS,
+  PINNED_SKILLS,
+  PINNED_WORK,
+  SITE,
+} from "@consts";
+import { work } from "@data/work";
+import { achievements } from "@data/achievements";
+import { education } from "@data/education";
+import { getPosts, getProjects } from "@lib/content";
+import { pickPinned } from "@lib/utils";
+
+const allProjects = await getProjects();
+const projects = pickPinned(PINNED_PROJECTS, allProjects, (p) => p.id).slice(
+  0,
+  SITE.NUM_PROJECTS_ON_HOMEPAGE,
+);
+const posts = (await getPosts()).slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
+const pinnedWork = pickPinned(PINNED_WORK, work, (w) => w.id);
+const pinnedAchievements = pickPinned(
+  PINNED_ACHIEVEMENTS,
+  achievements,
+  (a) => a.id,
+);
+const degrees = education.filter((e) => e.category === "Degree");
+const certs = education.filter((e) => e.category === "Certification");
+
+// Sections listed in the sidebar nav (ids must match <Section id>).
+const navSections = [
+  { id: "about", label: "About" },
+  { id: "experience", label: "Experience" },
+  { id: "projects", label: "Projects" },
+  { id: "achievements", label: "Achievements" },
+  { id: "blog", label: "Blog" },
+];
 ---
 
 <Layout title={SITE.TITLE} description={HOME.DESCRIPTION}>
-  <h1 class="mx-auto max-w-[1120px] py-12 text-4xl font-bold">{SITE.AUTHOR}</h1>
+  <div class="mx-auto grid max-w-[1120px] grid-cols-1 min-[880px]:grid-cols-[minmax(260px,0.85fr)_1.4fr] min-[880px]:gap-16">
+    <Sidebar sections={navSections} />
+
+    <div class="flex min-w-0 flex-col gap-16 py-10 min-[880px]:gap-20 min-[880px]:pt-12 min-[880px]:pb-16">
+      <Section id="about" title="About">
+        <div class="text-muted flex max-w-[62ch] flex-col gap-3.5 [&_strong]:font-medium [&_strong]:text-fg">
+          <p>
+            TODO: I'm a <strong>third-year Computer Science student</strong> who
+            likes turning class ideas into real, deployed apps. Most of my work
+            is full-stack web, with a growing interest in cloud and automation.
+          </p>
+          <p>
+            TODO: Right now I'm learning AWS and building this portfolio from
+            scratch.
+          </p>
+        </div>
+      </Section>
+
+      <Section id="experience" title="Experience">
+        <div class="flex flex-col gap-1.5">
+          {pinnedWork.map((item) => (
+            <WorkRow item={item} />
+          ))}
+        </div>
+      </Section>
+
+      <Section id="projects" title="Projects">
+        <StackMarquee skills={PINNED_SKILLS} />
+        <div class="-mt-2 flex justify-end">
+          <MoreLink href="/skills">See all skills</MoreLink>
+        </div>
+        <div class="grid grid-cols-1 gap-4 min-[560px]:grid-cols-2">
+          {projects.map((project) => (
+            <ProjectCard project={project} />
+          ))}
+        </div>
+        <MoreLink href="/projects">See all projects</MoreLink>
+      </Section>
+
+      <Section id="achievements" title="Achievements">
+        <div class="flex flex-col">
+          {pinnedAchievements.map((a) => (
+            <AchievementItem achievement={a} />
+          ))}
+        </div>
+        <MoreLink href="/achievements">All achievements</MoreLink>
+      </Section>
+
+      <Section id="education" title="Education">
+        {degrees.map((item) => (
+          <EducationCard item={item} />
+        ))}
+      </Section>
+
+      <Section id="certifications" title="Certifications">
+        <CertRail items={certs} />
+      </Section>
+
+      <Section id="blog" title="Blog">
+        <div class="flex flex-col">
+          {posts.map((post) => (
+            <PostItem post={post} />
+          ))}
+        </div>
+        <MoreLink href="/blog">All posts</MoreLink>
+      </Section>
+    </div>
+  </div>
 </Layout>
