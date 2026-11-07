@@ -1,0 +1,20 @@
+---
+import Chip from "@components/Chip.astro";
+import SkillIcon from "@components/SkillIcon.astro";
+import { skills, type SkillKey } from "@data/skills";
+
+type Props = {
+  skill: SkillKey;
+  href?: string;
+  /** Shown muted after the name (e.g. number of projects) */
+  count?: number;
+  tabindex?: number;
+};
+const { skill, href, count, tabindex } = Astro.props;
+---
+
+<Chip href={href} class="pl-2" tabindex={tabindex}>
+  <SkillIcon skill={skill} />
+  {skills[skill].name}
+  {count !== undefined && <span class="text-muted ml-0.5">{count}</span>}
+</Chip>

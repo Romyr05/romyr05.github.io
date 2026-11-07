@@ -1,0 +1,24 @@
+---
+import { Icon } from "astro-icon/components";
+import { skills, type Skill, type SkillKey } from "@data/skills";
+
+/** Brand logo for a skill, or a 2-letter text badge if it has no icon. */
+type Props = { skill: SkillKey; class?: string };
+const { skill, class: className = "size-4" } = Astro.props;
+const { name, icon } = skills[skill] as Skill;
+const initials = name.replace(/[^A-Za-z0-9]/g, "").slice(0, 2);
+---
+
+{icon ? (
+  <Icon name={icon} class={className} title={name} />
+) : (
+  <span
+    title={name}
+    class:list={[
+      "grid place-items-center rounded-[3px] border-[1.5px] border-current font-mono text-[7.5px] leading-none font-semibold",
+      className,
+    ]}
+  >
+    {initials}
+  </span>
+)}

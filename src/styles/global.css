@@ -104,3 +104,24 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Typography plugin colours wired to the theme tokens (works in both themes). */
+@utility prose-site {
+  --tw-prose-body: var(--fg-accent);
+  --tw-prose-headings: var(--fg);
+  --tw-prose-lead: var(--muted);
+  --tw-prose-links: var(--accent);
+  --tw-prose-bold: var(--fg);
+  --tw-prose-counters: var(--muted);
+  --tw-prose-bullets: var(--muted);
+  --tw-prose-hr: var(--line);
+  --tw-prose-quotes: var(--fg-accent);
+  --tw-prose-quote-borders: var(--line);
+  --tw-prose-captions: var(--muted);
+  --tw-prose-code: var(--fg);
+  --tw-prose-pre-code: var(--fg);
+  --tw-prose-pre-bg: var(--bg-accent);
+  --tw-prose-th-borders: var(--line);
+  --tw-prose-td-borders: var(--line);
+  max-width: 65ch;
+}

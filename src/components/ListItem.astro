@@ -1,0 +1,40 @@
+---
+/**
+ * Bordered list row used by blog posts and achievements:
+ * optional eyebrow label, title, date on the right, muted line below.
+ */
+type Props = {
+  href?: string;
+  title: string;
+  date: string;
+  eyebrow?: string;
+  description?: string;
+};
+const { href, title, date, eyebrow, description } = Astro.props;
+const Tag = href ? "a" : "div";
+---
+
+<Tag
+  href={href}
+  class="group border-line grid grid-cols-[1fr_auto] gap-x-4 gap-y-1 border-t py-4 no-underline last:border-b"
+>
+  <div>
+    {eyebrow && (
+      <span class="text-accent mb-1.5 block font-mono text-[11px] leading-none font-medium tracking-[.08em] uppercase">
+        {eyebrow}
+      </span>
+    )}
+    <h3
+      class:list={[
+        "text-base leading-snug font-semibold transition-colors",
+        href && "group-hover:text-accent",
+      ]}
+    >
+      {title}
+    </h3>
+  </div>
+  <span class="text-muted font-mono text-xs leading-[1.9] whitespace-nowrap">
+    {date}
+  </span>
+  {description && <p class="text-muted col-span-full text-sm">{description}</p>}
+</Tag>

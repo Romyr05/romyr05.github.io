@@ -1,0 +1,23 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+/** Wide image under a detail page header; striped placeholder when missing. */
+type Props = { src?: ImageMetadata | string; alt: string; placeholder: string };
+const { src, alt, placeholder } = Astro.props;
+---
+
+<div class="border-line overflow-hidden rounded-xl border">
+  {!src ? (
+    <div class="shot aspect-video">{placeholder}</div>
+  ) : typeof src === "string" ? (
+    <img src={src} alt={alt} class="aspect-video w-full object-cover" />
+  ) : (
+    <Image
+      src={src}
+      alt={alt}
+      width={1280}
+      class="aspect-video w-full object-cover"
+    />
+  )}
+</div>

@@ -1,0 +1,12 @@
+---
+/** Title + lede block at the top of list pages. */
+type Props = { title: string; lede?: string };
+const { title, lede } = Astro.props;
+---
+
+<div class="flex flex-col gap-3">
+  <h1 class="text-[clamp(30px,6vw,44px)] leading-[1.08] font-bold tracking-[-0.03em]">
+    {title}
+  </h1>
+  {lede && <p class="text-muted max-w-[56ch] text-lg">{lede}</p>}
+</div>

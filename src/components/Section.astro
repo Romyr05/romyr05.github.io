@@ -1,0 +1,18 @@
+---
+/** Home page section: mono uppercase heading + optional right-side slot. */
+type Props = { id: string; title: string };
+const { id, title } = Astro.props;
+---
+
+<section
+  id={id}
+  class="flex min-w-0 scroll-mt-[calc(var(--header-h)+24px)] flex-col gap-5"
+>
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h2 class="font-mono text-[13px] leading-none font-medium tracking-[.14em] uppercase">
+      {title}
+    </h2>
+    <slot name="head" />
+  </div>
+  <slot />
+</section>
