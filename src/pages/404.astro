@@ -1,0 +1,16 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/Container.astro";
+import BackLink from "@components/BackLink.astro";
+import PageHeader from "@components/PageHeader.astro";
+---
+
+<Layout title="Not found" description="This page doesn't exist.">
+  <Container>
+    <BackLink href="/">Home</BackLink>
+    <PageHeader
+      title="404"
+      lede="This page doesn't exist (or I haven't written it yet)."
+    />
+  </Container>
+</Layout>
