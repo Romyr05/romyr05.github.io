@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# TODO: update if your site URL changes
+Sitemap: https://romyr05.github.io/sitemap-index.xml
