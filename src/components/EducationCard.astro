@@ -22,8 +22,12 @@ const dates =
   <div>
     <div class="text-base font-semibold">{item.title}</div>
     <div class="text-muted text-sm">
-      {item.institution ?? item.provider} · {dates}
-      {item.note}
+      {[
+        item.institution ?? item.provider,
+        [dates, item.note].filter(Boolean).join(" "),
+      ]
+        .filter(Boolean)
+        .join(" · ")}
     </div>
     {item.description && (
       <p class="text-muted mt-1.5 text-sm">{item.description}</p>
